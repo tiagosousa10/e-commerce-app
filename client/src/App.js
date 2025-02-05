@@ -1,9 +1,34 @@
 
+import { useEffect } from "react";
+import {
+  BrowserRouter, 
+  Routes, 
+  Route, 
+  useLocation
+} from 'react-router-dom'
+import Home from './scenes/home/Home'
+
+
+const ScrollToTop = () => {
+  const {pathname} = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // scroll to top
+  },[pathname]);
+
+  return null;
+}
+
 
 function App() {
   return (
     <div className="app">
-      <h1>gelele</h1>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Routes> 
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
