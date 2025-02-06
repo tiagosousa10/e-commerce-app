@@ -25,7 +25,6 @@ const ShoppingList = () => {
       const itemsJson = await items.json()
       if(itemsJson) {
          dispatch(setItems(itemsJson.data))
-         console.log("🚀 ~ getItems ~ itemsJson:", itemsJson)
       } else {
          console.log("No items found")
       }
