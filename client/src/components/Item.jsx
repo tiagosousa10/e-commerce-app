@@ -1,16 +1,16 @@
 import { useState } from "react";
-import {useDispath} from "react-redux"
+import {useDispatch} from "react-redux"
 import {IconButton, Box, Typography, useTheme, Button} from "@mui/material"
 import AddIcon from "@mui/icons-material/Add"
 import RemoveIcon from "@mui/icons-material/Remove"
-import {shades} from "../../theme"
-import {addToCart} from '../../state'
+import {shades} from "../theme"
+import {addToCart} from '../state'
 import {useNavigate} from "react-router-dom"
 
 
 const Item = ({item, width}) => {
    const navigate = useNavigate()
-   const dispatch = useDispath()
+   const dispatch = useDispatch()
    const [count,setCount] = useState(1) // starting the count at 1
    const [isHovered, setIsHovered] = useState(false) 
    const {
