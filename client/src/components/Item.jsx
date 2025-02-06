@@ -17,16 +17,9 @@ const Item = ({item, width}) => {
       palette: {neutral}
    } = useTheme()
 
-   const {category, price , name , image} = item.attributes; // from strapi
-   const {
-      data: {
-         attributes: {
-            formats: {
-               medium: {url} // -> src img from strapi
-            }
-         }
-      }
-   } = image; // from strapi
+   const { category, price, name, image } = item;
+
+   const url = item.image.formats.medium.url;
 
    return (
       <Box width={width}>

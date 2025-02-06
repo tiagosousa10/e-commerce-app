@@ -23,7 +23,12 @@ const ShoppingList = () => {
          }
       )
       const itemsJson = await items.json()
-      dispatch(setItems(itemsJson.data))
+      if(itemsJson) {
+         dispatch(setItems(itemsJson.data))
+         console.log("🚀 ~ getItems ~ itemsJson:", itemsJson)
+      } else {
+         console.log("No items found")
+      }
    }
 
    useEffect(() => {
@@ -32,16 +37,14 @@ const ShoppingList = () => {
 
 
    const topRatedItems = items.filter(
-      (item) => item.attributes.category === "topRated"
-   )
-
-   const newArrivalsItems = items.filter(
-      (item) => item.attributes.category === "newArrivals"
-   )
-
-   const bestSellersItems = items.filter(
-      (item) => item.attributes.category === "bestSellers"
-   )
+      (item) => item.category === "topRated"
+    );
+    const newArrivalsItems = items.filter(
+      (item) => item.category === "newArrivals"
+    );
+    const bestSellersItems = items.filter(
+      (item) => item.category === "bestSellers"
+    );
 
 
   return (
@@ -66,10 +69,33 @@ const ShoppingList = () => {
          }
         }}
       >
-
+         <Tab label="ALL" value="all" />
+         <Tab label="NEW ARRIVALS" value="newArrivals" />
+         <Tab label="BEST SELLERS" value="bestSellers" />
+         <Tab label="TOP RATED" value="topRated" />
 
       </Tabs>
-
+        <Box
+         margin="0 auto"
+         display={"grid"}
+         gridTemplateColumns={"repeat(auto-fill, 300px)"}
+         justifyContent={"space-around"}
+         rowGap="20px"
+         columnGap="1.33%"
+        >
+         {value === "all" && items.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`}   />
+         ))}
+         {value === "newArrivals" && newArrivalsItems.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`}   />
+         ))}
+         {value === "bestSellers" && bestSellersItems.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`}   />
+         ))}
+         {value === "topRated" && topRatedItems.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`}   />
+         ))}
+        </Box>
     </Box>
   )
 }
