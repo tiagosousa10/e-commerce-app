@@ -42,9 +42,9 @@ export const cartSlice = createSlice({
       })
     },
 
-    setIsCartOpen : (state,action) => {
-      state.isCartOpen = !action.payload //toggle the cart
-    }
+    setIsCartOpen: (state) => {
+      state.isCartOpen = !state.isCartOpen;
+    },
   }
 })
 
