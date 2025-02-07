@@ -15,8 +15,9 @@ const ItemDetails = () => {
   const {itemId} = useParams()
   const [value,setValue] = useState("description")
   const [count,setCount] = useState(1)
-  const [item,setItem] = useState(null)
+  const [item,setItem] = useState()
   const [items,setItems] = useState([])
+
 
   const handleChange = (event, newValue)=> {
     setValue(newValue)
@@ -25,11 +26,13 @@ const ItemDetails = () => {
   //single item
   async function getItem() {
     const item  = await fetch(
-      `http://localhost:1337/api/items/${itemId}?populate=image`, // fetching the items from the api strapi and grab image
+      `http://localhost:1337/api/items?filters[id][$eq]=${itemId}&populate[image][fields][0]=url`, // fetching the items from the api strapi and grab image
       {method: "GET"}
     )
     const itemJson = await item.json()
-    setItem(itemJson.data)
+    
+    setItem(itemJson.data[0])
+    
   }
 
   //all items
@@ -49,10 +52,13 @@ const ItemDetails = () => {
   getItems()
  }, [itemId]) // eslint-disable-line react-hooks/exhaustive-deps
 
+
+
+
   return (
     <Box
       width={"80%"}
-      margin={"80% auto"}
+      margin={"80px auto"}
     >
       <Box
         display={"flex"}
@@ -65,7 +71,7 @@ const ItemDetails = () => {
             alt={item?.name}
             width={"100%"}
             height={"100%"}
-            src={`http://localhost:1337${item?.attributes?.image?.data?.formats?.medium?.url}`}
+            src={`http://localhost:1337${item?.image?.url}`}
             style={{objectFit: "contain"}}
           />
         </Box>
@@ -78,29 +84,76 @@ const ItemDetails = () => {
           </Box>
           
           <Box m="65px 0 25px 0">
-            <Typography variant="h3">{item?.attributes?.title}</Typography>
-            <Typography>${item?.attributes.price}</Typography>
-            <Typography sx={{mt:"20px"}}>{item?.attributes.shortDescription}</Typography>
+            <Typography variant="h3">{item?.title}</Typography>
+            <Typography>${item?.price}</Typography>
+            <Typography sx={{mt:"20px"}}>{item?.shortDescription?.[0]?.children?.[0]?.text}</Typography>
           </Box>
 
+          {/*COUNT AND BUTTON */}
           <Box display={"flex"} alignItems={"center"} minHeight={"50px"}>
             <Box display={"flex"} alignItems={"center"} border={`1.5px solid ${shades.neutral[300]}`} mr={"20px"} p={"2px 5px"}> 
             <IconButton
-                        onClick={() => setCount(Math.max(count - 1, 1))}
-                     >
-                        <RemoveIcon />
-                     </IconButton>
-                     <Typography color={shades.primary[300]}>{count}</Typography>
-                     <IconButton
-                        onClick={() => setCount(Math.max(count +1))}
-                     >
-                        <AddIcon />
-                     </IconButton>
+              onClick={() => setCount(Math.max(count - 1, 1))}
+            >
+              <RemoveIcon />
+            </IconButton>
+            <Typography sx={{p:"0 5px"}}>{count}</Typography>
+            <IconButton
+              onClick={() => setCount(Math.max(count +1))}
+            >
+              <AddIcon />
+            </IconButton>
             </Box>
+
+            <Button sx={{backgroundColor: "#222222", color: "white", borderRadius:0, minWidth:"150px", padding:"10px 40px"}}
+            onClick={() =>dispatch(addToCart({item: {...item, count}}))}
+            >
+              ADD TO CART
+            </Button>
+          </Box>
+
+          <Box>
+            <Box m="20px 0 5px 0" display={"flex"}>
+              <FavoriteBorderOutlined />
+              <Typography sx={{ml:"5px"}}>ADD TO WISHLIST</Typography>
+            </Box>
+            <Typography>CATEGORIES: {item?.category}</Typography>
           </Box>
         </Box>
       </Box>
 
+      {/* INFORMATION */}
+
+      <Box m={"20px 0"}>
+        <Tabs value={value} onChange={handleChange} >
+          <Tab label="DESCRIPTION" value="description" />
+          <Tab label="REVIEWS" value="reviews" />
+        </Tabs>
+      </Box>
+      <Box display={"flex"} flexWrap={"wrap"} gap={"15px"}>
+        {value === "description" && (
+          <div>{item?.longDescription?.[0]?.children?.[0]?.text}</div>
+        )}  
+
+        {value === "reviews" && <div>reviews</div>}
+      </Box>
+
+      {/* RELATED ITEMS */}
+
+      <Box mt={"50px"} width={"100%"}> 
+        <Typography variant="h3" fontWeight={"bold"}>Related Products</Typography>     
+        <Box
+          mt="20px"
+          display={"flex"}
+          flexWrap={"wrap"}
+          columnGap={"1.33%"}
+          justifyContent={"space-between"}
+        >
+          {items.slice(0,4).map((item,i) => (
+            <Item key={`${item.id}-${i}`} item={item} />
+          ))}
+        </Box>
+      </Box>
     </Box>
   )
 }
