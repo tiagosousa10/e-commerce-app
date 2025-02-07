@@ -80,7 +80,7 @@ const CartMenu = () => {
                         </Typography>
                         <IconButton
                           onClick={() =>
-                            dispatch(removeFromCart({ id: item.id }))
+                            dispatch(removeFromCart({ id: item.item.id }))
                           }
                         >
                           <CloseIcon />
