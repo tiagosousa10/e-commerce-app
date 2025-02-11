@@ -114,14 +114,23 @@ const Checkout = () => {
     actions.setTouched({}) // from formik
   }
 
+  console.log("Cart state:", cart);
+
+
   async function makePayment(values) {
     const stripe = await stripePromise;
 
     const requestBody = {
-      userName: [values.firstName, values.lastName].join(" "),
+      userName: [values.billingAddress.firstName, values.billingAddress.lastName].join(" "),
       email: values.email,
-      products: cart.map(({id, count}) => ({id, count})), //grabbing the id and count from the cart
+      products: cart.map(({ item }) => ({
+        id: item.id,   // Agora acessa corretamente o ID dentro de item
+        count: item.count, // Agora acessa corretamente o count dentro de item
+      })),
     };
+    
+    console.log("Updated requestBody:", requestBody); // Verifique se os dados estão corretos
+
 
     const response = await fetch("http://localhost:1337/api/orders", {
       method: "POST",
@@ -196,7 +205,7 @@ const Checkout = () => {
                       borderRadius: 0,
                       padding: "15px 40px"
                     }}
-                    onclick={() => setActiveStep(activeStep - 1)}
+                    onClick={() => setActiveStep(activeStep - 1)}
                   >
                     Back
                   </Button>
@@ -213,7 +222,6 @@ const Checkout = () => {
                       borderRadius: 0,
                       padding: "15px 40px"
                     }}
-                    onclick={() => setActiveStep(activeStep + 1)}
                   >
                     {isFirstStep ? "Next" : "Place Order"} 
                   </Button>
